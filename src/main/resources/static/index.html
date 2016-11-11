@@ -63,9 +63,9 @@
 	<script type="text/javascript">
 
 	var login_app = angular.module('loginapp', []);
-	var elpath = $location.protocol() + "://" + $location.host();
 
-	login_app.controller('login_controller', function($scope, $http) {
+	login_app.controller('login_controller', function($scope, $location, $http) {
+		var elpath = $location.protocol() + "://" + $location.host();
 
 		$scope.click_login = function() {
 			var foo = $scope.acceso.id_cliente;
