@@ -63,6 +63,7 @@
 	<script type="text/javascript">
 
 	var login_app = angular.module('loginapp', []);
+	var elpath = $location.protocol() + "://" + $location.host();
 
 	login_app.controller('login_controller', function($scope, $http) {
 
@@ -72,15 +73,15 @@
 			var id = $scope.acceso.id;
 			if (!id) return;
 
-			$http.get("http://localhost:8181/consulta_id_cliente?id="+id)
+			$http.get(elpath+":8181/consulta_id_cliente?id="+id)
 			.then(function (response) {$scope.acceso = response.data;});
 
 			if ($scope.acceso.id_cliente == "") return;
 
-			$http.get("http://localhost:8181/login?id="+id)
+			$http.get(elpath+":8181/login?id="+id)
 			.then(function (response) {});
 
-			$http.get("http://localhost:8080/por-id?id="+id)
+			$http.get(elpath+":8080/por-id?id="+id)
 			.then(function (response) {$scope.usuario = response.data;});
 
 			$scope.status = "Logged boton click!";
@@ -92,7 +93,7 @@
 			$scope.acceso = null;
 			$scope.usuario = null;
 
-			$http.get("http://localhost:8181/logout?id="+id)
+			$http.get(elpath+":8181/logout?id="+id)
 			.then(function (response) {});
 
 			$scope.status = "Logged out!";
@@ -103,11 +104,11 @@
 			var ap = $scope.usuario.apellidoPaterno;
 			var am = $scope.usuario.apellidoMaterno;
 
-			$http.get("http://localhost:8080/alta?nombre="+nombre+"&apellido_paterno="+ap+"&apellido_materno="+am)
+			$http.get(elpath+":8080/alta?nombre="+nombre+"&apellido_paterno="+ap+"&apellido_materno="+am)
 			.then(function (response) {$scope.usuario = response.data;});
 
 			var id = $scope.usuario.id;
-			$http.get("http://localhost:8181/nuevo_acceso?id_cliente="+id)
+			$http.get(elpath+":8181/nuevo_acceso?id_cliente="+id)
 			.then(function (response) {});
 
 			$scope.status = "Alta usuario nuevo!";
@@ -117,13 +118,13 @@
 
 			var id = $scope.acceso.id;
 			try {
-				$http.get("http://localhost:8080/baja?id="+id)
+				$http.get(elpath+":8080/baja?id="+id)
 				.then(function (response) {});
 			}
 			catch (e) {}
 
 			try {
-				$http.get("http://localhost:8181/baja?id="+id)
+				$http.get(elpath+":8181/baja?id="+id)
 				.then(function (response) {});
 			}
 			catch (e) {}
@@ -138,7 +139,7 @@
 			var ap = $scope.usuario.apellidoPaterno;
 			var am = $scope.usuario.apellidoMaterno;
 
-			$http.get("http://localhost:8080/cambios?id="+idc+"&nombre="+nombre+"&apellido_paterno="+ap+"&apellido_materno="+am)
+			$http.get(elpath+":8080/cambios?id="+idc+"&nombre="+nombre+"&apellido_paterno="+ap+"&apellido_materno="+am)
 			.then(function (response) {$scope.usuario = response.data;});
 
 			$scope.status = "Cambios usuario!";
