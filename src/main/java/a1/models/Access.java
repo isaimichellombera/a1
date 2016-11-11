@@ -1,11 +1,14 @@
 package a1.models;
 
-import java.sql.Timestamp;
+import java.util.Date;
+//import java.util.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -18,15 +21,19 @@ public class Access {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
-	@Id
-	private long id_cliente;
+	@NotNull
+	private long cliente;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	//@DateTimeFormat(pattern = "dd/MM/YYY");
-	private Timestamp login;
+	//@Temporal(TemporalType.TIMESTAMP)
+	//private Date login;
+	// casting problems ???
+	@NotNull
+	private String login;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Timestamp logout;
+	//@Temporal(TemporalType.TIMESTAMP)
+	//private Date logout;
+	@NotNull
+	private String logout;
 
 	// public methods
 	
@@ -38,7 +45,12 @@ public class Access {
 
 	public Access(long id, long idc) {
 		this.id = id;
-		this.id_cliente = idc;
+		this.cliente = idc;
+	}
+
+	public Access(String login, String logout) {
+		this.login = login;
+		this.logout = logout;
 	}
 
 	// getter setter methods
@@ -52,26 +64,26 @@ public class Access {
 	}
 
 	public long getIdCliente() {
-		return id_cliente;
+		return cliente;
 	}
 
 	public void setIdCliente(long value) {
-		this.id_cliente = value;
+		this.cliente = value;
 	}
 
-	public Timestamp getLogin() {
+	public String getLogin() {
 		return login;
 	}
 
-	public void setLogin(Date d) {
+	public void setLogin(String d) {
 		this.login = d;
 	}
 
-	public TimeStamp getLogout() {
+	public String getLogout() {
 		return logout;
 	}
 
-	public void setLogout(Date d) {
+	public void setLogout(String d) {
 		this.logout = d;
 	}
 }

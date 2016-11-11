@@ -1,13 +1,18 @@
-package a1;
+package a1.controllers;
 
 import a1.models.Access;
 import a1.models.AccessDao;
+
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @RestController
 public class AccessController {
 
@@ -21,9 +26,10 @@ public class AccessController {
 		Access acceso = null;
 
 		try {
-			acceso = new Access();
+			acceso = new Access("","");
 			accessDao.save(acceso);
-			access_id = String.valueOf(acceso.getId);
+			acceso.setIdCliente(acceso.getId()); // keep IDs consistent for this hackathon
+			accessDao.save(acceso);
 		}
 		catch (Exception e) {
 			return acceso;
@@ -51,11 +57,11 @@ public class AccessController {
 	@RequestMapping("/login")
 	public Access login(long id) {
 		Access acceso = null;
-		Date now = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
 
 		try {
 			acceso = accessDao.findById(id);
-			acceso.setLogin(now);
+			acceso.setLogin(String.valueOf(System.currentTimeMillis()));
+			accessDao.save(acceso);
 		}
 		catch (Exception e) {
 			return acceso;
@@ -67,11 +73,12 @@ public class AccessController {
 	@RequestMapping("/logout")
 	public Access logout(long id) {
 		Access acceso = null;
-		Date now = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
 
 		try {
 			acceso = accessDao.findById(id);
-			acceso.setLogout(now);
+			//acceso.setLogout(new Timestamp(System.currentTimeMillis()));
+			acceso.setLogout(String.valueOf(System.currentTimeMillis()));
+			accessDao.save(acceso);
 		}
 		catch (Exception e) {
 			return acceso;
@@ -79,4 +86,16 @@ public class AccessController {
 		return acceso;
 	}
 
+	@RequestMapping("/baja")
+	//public Access baja(long id) {
+	public Access baja(long id) {
+		try {
+			Access acceso = new Access(id);
+			accessDao.delete(acceso);
+		}
+		catch (Exception e) {
+			return new Access(id);
+		}
+		return new Access(id);
+	}
 }

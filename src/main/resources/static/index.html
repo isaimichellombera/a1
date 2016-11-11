@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+<title>Banregio Hackathon: Microservice Acceso</title>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Banregio Hackathon</h1>
+    <h2>2 microservices por Isa&iacute Michel Lombera</h2>
+    <h3>Estas conectado a microservicio Aceso</h3>
+    
+	<!-- Login page -->
+	<div ng-app="loginapp" ng-controller="login_controller">
+		<form>
+			<p>Login ID:
+			<input type="text" ng-model="acceso.id" ng-disabled="usuario.nombre != null">
+			<button ng-click="click_login()" ng-disabled="usuario.nombre != null">Login</button>
+			<button ng-click="click_logout()" ng-disabled="usuario.nombre == null">Logout</button>
+			<input type="hidden" ng-model="acceso.id_cliente"/>
+			<input type="hidden" ng-model="acceso.login"/>
+			<input type="hidden" ng-model="acceso.logout"/>
+			</p>
+		</form>
+
+	<!-- User page (CRUD) -->
+	<div>
+		<form novalidate class="simple-form">
+			<table>
+				<tr>
+					<td>Id</td>
+					<td>{{usuario.id}}</td>
+				</tr>
+				<tr>
+					<td>Nombre</td>
+					<td><input type="text" ng-model="usuario.nombre" ng-disabled="usuario.nombre == null"/></td>
+				</tr>
+				<tr>
+					<td>Apellido paterno</td>
+					<td><input type="text" ng-model="usuario.apellidoPaterno" ng-disabled="usuario.nombre == null"/></td>
+				</tr>
+				<tr>
+					<td>Apellido materno</td>
+					<td><input type="text" ng-model="usuario.apellidoMaterno" ng-disabled="usuario.nombre == null"/></td>
+				</tr>
+			</table>
+			<button ng-click="usuario_alta()" ng-disabled="usuario.nombre == null">Alta</button>
+			<button ng-click="usuario_baja()" ng-disabled="usuario.nombre == null">Baja</button>
+			<button ng-click="usuario_cambios()" ng-disabled="usuario.nombre == null">Cambios</button>
+		</form>
+	</div>
+
+	<h3>Status: {{status}}</h3>
+	<h4>Cuidado, si bajas (eliminar) cada login ID no es posible login sin crear nuevos valores en el BD.</h4>
+	</div>
+
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="js/angular.min.js" type="text/javascript"></script>
+  <script src="js/bootstrap.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+
+	var login_app = angular.module('loginapp', []);
+
+	login_app.controller('login_controller', function($scope, $http) {
+
+		$scope.click_login = function() {
+			var foo = $scope.acceso.id_cliente;
+			
+			var id = $scope.acceso.id;
+			if (!id) return;
+
+			$http.get("http://localhost:8181/consulta_id_cliente?id="+id)
+			.then(function (response) {$scope.acceso = response.data;});
+
+			if ($scope.acceso.id_cliente == "") return;
+
+			$http.get("http://localhost:8181/login?id="+id)
+			.then(function (response) {});
+
+			$http.get("http://localhost:8080/por-id?id="+id)
+			.then(function (response) {$scope.usuario = response.data;});
+
+			$scope.status = "Logged boton click!";
+		};
+
+		$scope.click_logout = function() {
+
+			var id = $scope.acceso.id;
+			$scope.acceso = null;
+			$scope.usuario = null;
+
+			$http.get("http://localhost:8181/logout?id="+id)
+			.then(function (response) {});
+
+			$scope.status = "Logged out!";
+		};
+
+		$scope.usuario_alta = function() {
+			var nombre = $scope.usuario.nombre;
+			var ap = $scope.usuario.apellidoPaterno;
+			var am = $scope.usuario.apellidoMaterno;
+
+			$http.get("http://localhost:8080/alta?nombre="+nombre+"&apellido_paterno="+ap+"&apellido_materno="+am)
+			.then(function (response) {$scope.usuario = response.data;});
+
+			var id = $scope.usuario.id;
+			$http.get("http://localhost:8181/nuevo_acceso?id_cliente="+id)
+			.then(function (response) {});
+
+			$scope.status = "Alta usuario nuevo!";
+		};
+
+		$scope.usuario_baja = function() {
+
+			var id = $scope.acceso.id;
+			try {
+				$http.get("http://localhost:8080/baja?id="+id)
+				.then(function (response) {});
+			}
+			catch (e) {}
+
+			try {
+				$http.get("http://localhost:8181/baja?id="+id)
+				.then(function (response) {});
+			}
+			catch (e) {}
+
+			$scope.status = "Baja usuario! Adios.";
+			$scope.click_logout();
+		};
+
+		$scope.usuario_cambios = function() {
+			var idc = $scope.usuario.id;
+			var nombre = $scope.usuario.nombre;
+			var ap = $scope.usuario.apellidoPaterno;
+			var am = $scope.usuario.apellidoMaterno;
+
+			$http.get("http://localhost:8080/cambios?id="+idc+"&nombre="+nombre+"&apellido_paterno="+ap+"&apellido_materno="+am)
+			.then(function (response) {$scope.usuario = response.data;});
+
+			$scope.status = "Cambios usuario!";
+		};
+	});
+
+	</script>
+
+</body>
+</html> 

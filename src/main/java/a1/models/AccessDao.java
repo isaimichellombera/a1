@@ -1,4 +1,4 @@
-package com.isaim.models;
+package a1.models;
 
 import javax.transaction.Transactional;
 import org.springframework.data.repository.CrudRepository;

@@ -1,4 +1,6 @@
 spring:
+        server:
+                port: 8181
         datasource:
                 url: jdbc:mysql://localhost:3306/banregio1
                 username: root
@@ -18,6 +20,8 @@ spring:
 
 spring:
         profiles: container
+        server:
+                port: 8181
         datasource:
                 url: jdbc:mysql://${MYSQL_PORT_3306_TCP_ADDR}:${MYSQL_PORT_3306_TCP_PORT}/${MYSQL_ENV_MYSQL_DATABASE}
                 username: ${MYSQL_ENV_MYSQL_USER}
